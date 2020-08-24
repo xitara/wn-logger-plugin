@@ -36,7 +36,7 @@ class Logger
         $extra['file'] = str_replace(base_path(), '', $backtrace['file']);
         $extra['line'] = $backtrace['line'];
 
-        var_dump($description);
+        // var_dump($description);
 
         if (is_string($message) || is_numeric($message)) {
             $message = (($description === null) ? '' : $description . ': ') . $message;
