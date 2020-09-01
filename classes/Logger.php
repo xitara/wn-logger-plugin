@@ -1,6 +1,8 @@
 <?php namespace Xitara\Logger\Classes;
 
+use App;
 use Illuminate\Support\Facades\Log as OldLogger;
+use System\Models\LogSetting;
 
 /**
  * summary
@@ -51,6 +53,83 @@ class Logger
             $message = (($description === null) ? '' : $description . ': ') . $message;
         }
 
+        /**
+         * write to logger
+         */
         OldLogger::$level($message, $extra);
+
+        /**
+         * write to database
+         */
+        if (self::useDatabaseLogging()) {
+            try {
+                $record = new static;
+                $record->message = $message;
+                $record->level = $level;
+
+                if ($details !== null) {
+                    $record->details = (array) $details;
+                }
+                $record->save();
+            } catch (Exception $ex) {}
+        }
+
+        /**
+         * cli
+         */
+        if (php_sapi_name() == 'cli' && self::useCliLogging()) {
+            $string = '[' . $level . '] '
+                . (is_array($message) ? json_encode($message) : $message)
+                . ' [' . $extra['file'] . ':' . $extra['line'] . ']'
+                . "\n";
+
+            echo $string;
+        }
     }
+
+    /**
+     * Returns true if this logger should be used.
+     * @return bool
+     */
+    public static function useLogging()
+    {
+        return (
+            class_exists('Model') &&
+            Model::getConnectionResolver() &&
+            App::hasDatabase() &&
+            !defined('OCTOBER_NO_CUSTOM_LOGGING') &&
+            LogSetting::get('log_custom')
+        );
+    }
+
+    /**
+     * Returns true if cli-logging should be used.
+     * @return bool
+     */
+    public static function useCliLogging()
+    {
+        return (
+            class_exists('Model') &&
+            // Model::getConnectionResolver() &&
+            App::hasDatabase() &&
+            !defined('OCTOBER_NO_CLI_LOGGING') &&
+            LogSetting::get('log_cli')
+        );
+    }
+
+    /**
+     * Returns true if database-logging should be used.
+     * @return bool
+     */
+    public static function useDatabaseLogging()
+    {
+        return (
+            class_exists('Model') &&
+            // Model::getConnectionResolver() &&
+            App::hasDatabase() &&
+            !defined('OCTOBER_NO_DATABASE_LOGGING') &&
+            LogSetting::get('log_database')
+        );
+    }
+
 }
