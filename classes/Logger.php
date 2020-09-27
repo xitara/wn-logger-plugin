@@ -1,22 +1,28 @@
-<?php namespace Xitara\Logger\Classes;
+<?php
+
+namespace Xitara\Logger\Classes;
 
 use App;
 use Illuminate\Support\Facades\Log as OldLogger;
 use System\Models\LogSetting;
 
 /**
- * summary
+ * summary.
  */
 class Logger
 {
     /**
-     * called by all loglevels
+     * called by all loglevels.
+     *
      * @autor   m.burghammer@xitara.net
      * @date    2018-10-31T23:56:15+0100
+     *
      * @version 0.0.1
+     *
      * @since   0.0.1
-     * @param   string                   $loglevel  loglevel
-     * @param   array                   $arguments 0-> $message, 1 -> description (optional, no array, no object) 2-> key-value array context (optional)
+     *
+     * @param string $loglevel  loglevel
+     * @param array  $arguments 0-> $message, 1 -> description (optional, no array, no object) 2-> key-value array context (optional)
      */
     public static function __callStatic($loglevel, $arguments)
     {
@@ -24,10 +30,12 @@ class Logger
     }
 
     /**
-     * Creates a log record
-     * @param string $message Specifies the message text
-     * @param string $level Specifies the logging level
+     * Creates a log record.
+     *
+     * @param string $message     Specifies the message text
+     * @param string $level       Specifies the logging level
      * @param string $description Specifies the log description string
+     *
      * @return self
      */
     public static function add($message, $level = 'info', $extra)
@@ -54,16 +62,16 @@ class Logger
         }
 
         /**
-         * write to logger
+         * write to logger.
          */
         OldLogger::$level($message, $extra);
 
         /**
-         * write to database
+         * write to database.
          */
         if (self::useDatabaseLogging()) {
             try {
-                $record = new static;
+                $record = new static();
                 $record->message = $message;
                 $record->level = $level;
 
@@ -71,17 +79,18 @@ class Logger
                     $record->details = (array) $details;
                 }
                 $record->save();
-            } catch (Exception $ex) {}
+            } catch (Exception $ex) {
+            }
         }
 
         /**
-         * cli
+         * cli.
          */
         if (php_sapi_name() == 'cli' && self::useCliLogging()) {
-            $string = '[' . $level . '] '
-                . (is_array($message) ? json_encode($message) : $message)
-                . ' [' . $extra['file'] . ':' . $extra['line'] . ']'
-                . "\n";
+            $string = '['.$level.'] '
+                .(is_array($message) ? json_encode($message) : $message)
+                .' ['.$extra['file'].':'.$extra['line'].']'
+                ."\n";
 
             echo $string;
         }
@@ -89,47 +98,46 @@ class Logger
 
     /**
      * Returns true if this logger should be used.
+     *
      * @return bool
      */
     public static function useLogging()
     {
-        return (
+        return
             class_exists('Model') &&
             Model::getConnectionResolver() &&
             App::hasDatabase() &&
             !defined('OCTOBER_NO_CUSTOM_LOGGING') &&
-            LogSetting::get('log_custom')
-        );
+            LogSetting::get('log_custom');
     }
 
     /**
      * Returns true if cli-logging should be used.
+     *
      * @return bool
      */
     public static function useCliLogging()
     {
-        return (
+        return
             class_exists('Model') &&
             // Model::getConnectionResolver() &&
             App::hasDatabase() &&
             !defined('OCTOBER_NO_CLI_LOGGING') &&
-            LogSetting::get('log_cli')
-        );
+            LogSetting::get('log_cli');
     }
 
     /**
      * Returns true if database-logging should be used.
+     *
      * @return bool
      */
     public static function useDatabaseLogging()
     {
-        return (
+        return
             class_exists('Model') &&
             // Model::getConnectionResolver() &&
             App::hasDatabase() &&
             !defined('OCTOBER_NO_DATABASE_LOGGING') &&
-            LogSetting::get('log_database')
-        );
+            LogSetting::get('log_database');
     }
-
 }
