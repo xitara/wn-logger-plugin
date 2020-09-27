@@ -30,7 +30,7 @@ class Logger
      * @param string $description Specifies the log description string
      * @return self
      */
-    public static function add($message, $level = 'info', $description, $extra)
+    public static function add($message, $level = 'info', $extra)
     {
         // add file and line
         $backtrace = debug_backtrace();
@@ -40,9 +40,9 @@ class Logger
 
         // var_dump($description);
 
-        if (is_string($message) || is_numeric($message)) {
-            $message = (($description === null) ? '' : $description . ': ') . $message;
-        }
+        // if (is_string($message) || is_numeric($message)) {
+        //     $message = (($description === null) ? '' : $description . ': ') . $message;
+        // }
 
         if (is_object($message)) {
             $message = (array) $message;
@@ -50,7 +50,7 @@ class Logger
 
         if (is_bool($message)) {
             $message = ($message === true) ? 'true' : 'false';
-            $message = (($description === null) ? '' : $description . ': ') . $message;
+            // $message = (($description === null) ? '' : $description . ': ') . $message;
         }
 
         /**
