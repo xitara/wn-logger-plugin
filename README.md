@@ -21,7 +21,7 @@ Example code
 |`Log::debug('debug-test');`|
 
 Format:
-`Log::[loglevel](String message[, String description[, Array context]]);`
+`Log::[loglevel](String message[, Array context]);`
 
 Message is the text to write to log
 Description will be placed before message if message is boolean, string or numeric, not on arrays or objects

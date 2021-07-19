@@ -38,7 +38,7 @@ class Logger
      *
      * @return self
      */
-    public static function add($message, $level = 'info', $extra)
+    public static function add($message, $level, $extra)
     {
         // add file and line
         $backtrace = debug_backtrace();
@@ -52,9 +52,9 @@ class Logger
         //     $message = (($description === null) ? '' : $description . ': ') . $message;
         // }
 
-        if (is_object($message)) {
-            $message = (array) $message;
-        }
+        // if (is_object($message)) {
+        //     $message = (array) $message;
+        // }
 
         if (is_bool($message)) {
             $message = ($message === true) ? 'true' : 'false';
@@ -87,10 +87,10 @@ class Logger
          * cli.
          */
         if (php_sapi_name() == 'cli' && self::useCliLogging()) {
-            $string = '['.$level.'] '
-                .(is_array($message) ? json_encode($message) : $message)
-                .' ['.$extra['file'].':'.$extra['line'].']'
-                ."\n";
+            $string = '[' . $level . '] '
+                . (is_array($message) ? json_encode($message) : $message)
+                . ' [' . $extra['file'] . ':' . $extra['line'] . ']'
+                . "\n";
 
             echo $string;
         }
@@ -104,11 +104,11 @@ class Logger
     public static function useLogging()
     {
         return
-            class_exists('Model') &&
-            Model::getConnectionResolver() &&
-            App::hasDatabase() &&
-            !defined('OCTOBER_NO_CUSTOM_LOGGING') &&
-            LogSetting::get('log_custom');
+        class_exists('Model') &&
+        Model::getConnectionResolver() &&
+        App::hasDatabase() &&
+        !defined('OCTOBER_NO_CUSTOM_LOGGING') &&
+        LogSetting::get('log_custom');
     }
 
     /**
@@ -119,11 +119,11 @@ class Logger
     public static function useCliLogging()
     {
         return
-            class_exists('Model') &&
-            // Model::getConnectionResolver() &&
-            App::hasDatabase() &&
-            !defined('OCTOBER_NO_CLI_LOGGING') &&
-            LogSetting::get('log_cli');
+        class_exists('Model') &&
+        // Model::getConnectionResolver() &&
+        App::hasDatabase() &&
+        !defined('OCTOBER_NO_CLI_LOGGING') &&
+        LogSetting::get('log_cli');
     }
 
     /**
@@ -134,10 +134,10 @@ class Logger
     public static function useDatabaseLogging()
     {
         return
-            class_exists('Model') &&
-            // Model::getConnectionResolver() &&
-            App::hasDatabase() &&
-            !defined('OCTOBER_NO_DATABASE_LOGGING') &&
-            LogSetting::get('log_database');
+        class_exists('Model') &&
+        // Model::getConnectionResolver() &&
+        App::hasDatabase() &&
+        !defined('OCTOBER_NO_DATABASE_LOGGING') &&
+        LogSetting::get('log_database');
     }
 }
