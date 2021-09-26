@@ -1,4 +1,4 @@
-# Simple Logger for October CMS that implements a filter for loglevels and can be active if debug=false
+# Simple Logger for WinterCMS (works also under OctoberCMS v1) that implements a filter for loglevels and can be active if debug=false
 
 Clone it to a Folder in your October CMS named
 `plugins\xitara\logger`
