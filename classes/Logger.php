@@ -26,7 +26,7 @@ class Logger
      */
     public static function __callStatic($loglevel, $arguments)
     {
-        self::add($arguments[0] ?? 'no_text', $loglevel, $arguments[1] ?? null, $arguments[2] ?? []);
+        self::add($arguments[0] ?? '(null)', $loglevel, $arguments[1] ?? null, $arguments[2] ?? []);
     }
 
     /**
@@ -57,7 +57,12 @@ class Logger
         // }
 
         if (is_bool($message)) {
-            $message = ($message === true) ? 'true' : 'false';
+            $message = '(' . (($message === true) ? 'true' : 'false') . ')';
+            // $message = (($description === null) ? '' : $description . ': ') . $message;
+        }
+
+        if (is_null($message)) {
+            $message = '(null)';
             // $message = (($description === null) ? '' : $description . ': ') . $message;
         }
 
